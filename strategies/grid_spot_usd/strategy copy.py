@@ -1,11 +1,10 @@
 import sys
-
-sys.path.append("./live_tools")
-import ccxt
+sys.path.append('../')
+# from utilities.get_data import get_historical_from_db
 import pandas as pd
-from utilities.spot_ftx import SpotFtx
-from datetime import datetime
-import time
+import ccxt
+import matplotlib.pyplot as plt
+import ta
 import json
 
 f = open(
@@ -13,17 +12,9 @@ f = open(
 )
 last_data = json.load(f)
 f.close()
-f = open(
-    "./live_tools/secret.json",
-)
-secret = json.load(f)
-f.close()
-
-account_to_select = "account1"
-
 
 def custom_grid(
-    first_price, last_order_down=0.5, last_order_up=1, down_grid_len=10, up_grid_len=10
+    first_price = 16882, last_order_down = 0.02, last_order_up = 0.02, down_grid_len=10, up_grid_len=20
 ):
     down_pct_unity = last_order_down / down_grid_len
     up_pct_unity = last_order_up / up_grid_len
@@ -39,27 +30,20 @@ def custom_grid(
 
     return grid_buy, grid_sell
 
-
-now = datetime.now()
-print(now.strftime("%d-%m %H:%M:%S"))
-
-
-ftx = SpotFtx(
-    apiKey=secret[account_to_select]["apiKey"],
-    secret=secret[account_to_select]["secret"],
-    subAccountName=secret[account_to_select]["subAccountName"],
-)
-
 symbol = "BTC/USD"
 coin1 = "BTC"
 coin2 = "USD"
 total_orders = 10
 
-current_price = ftx.get_bid_ask_price(symbol)["bid"]
+current_price = 16898,882
 
 orders_list = []
-for order in ftx.get_open_order():
-    orders_list.append(order["info"])
+orders_list.append({
+    "date": "2022-07-01 00:00:00",
+    "side": "Buy",
+    "price": 16898.882,
+    "size": 0.009
+})
 
 df_order = pd.DataFrame(orders_list)
 if df_order.empty == False:
@@ -67,8 +51,8 @@ if df_order.empty == False:
     df_order["size"] = pd.to_numeric(df_order["size"])
 # print(df_order)
 
-coin1_balance = ftx.get_detail_balance_of_one_coin(coin1)["free"]
-coin2_balance = ftx.get_detail_balance_of_one_coin(coin2)["free"]
+coin1_balance = 200
+coin2_balance = 200 / 16898.882
 # print(coin1_balance, coin2_balance)
 
 if (
@@ -79,28 +63,25 @@ if (
     print("create new grid")
     grid_buy, grid_sell = custom_grid(
         current_price,
-        last_order_down=0.4,
-        last_order_up=1.2,
-        down_grid_len=5,
-        up_grid_len=5,
+        last_order_down = 0.02, last_order_up = 0.02, down_grid_len=10, up_grid_len=20
     )
     for buy in grid_buy:
         # print(buy,(coin2_balance/buy)/len(grid_buy))
-        ftx.place_limit_order(
-            symbol=symbol,
-            side="buy",
-            amount=(coin2_balance / buy) / len(grid_buy),
-            price=buy,
-        )
+        orders_list.append({
+            "date": "2022-07-01 00:00:00",
+            "side": "Buy",
+            "price": buy,
+            "size": (coin2_balance / buy) / len(grid_buy)
+        })
 
     for sell in grid_sell:
         # print(sell,coin1_balance/len(grid_sell))
-        ftx.place_limit_order(
-            symbol=symbol,
-            side="sell",
-            amount=coin1_balance / len(grid_sell),
-            price=sell,
-        )
+        orders_list.append({
+            "date": "2022-07-01 00:00:00",
+            "side": "Sell",
+            "price": sell,
+            "size": coin1_balance / len(grid_sell)
+        })
 
 elif total_orders == len(df_order):
     print("no new orders")
