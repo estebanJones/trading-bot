@@ -1,6 +1,8 @@
 {
     "python.analysis.extraPaths": [
         "./strategies/services",
-        "./indirection"
+        "./indirection",
+        "./repositories",
+        "./strategies/grid_spot"
     ]
 }

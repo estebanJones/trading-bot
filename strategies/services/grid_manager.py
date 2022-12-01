@@ -22,6 +22,7 @@ def custom_grid(
 
     return grid_buy, grid_sell
 
+
 def get_last_data() -> str:
     f = open(PATH_OPEN_ORDERS)
     last_data = json.load(f)

@@ -1,0 +1,8 @@
+{
+    "prod": {
+        "api-mongodb":"xIr33cB8gBZj37pTvl6ulMno4cf4rEYnZYIZNjNnrQOZdkR5kdVhKtfvl0l92xoi"
+    },
+    "test": {
+        "api-mongodb":"guhk9QNf6aSBl0DsQjpyYcnX0JEwDe0NXOyFGl86RPlzBsYfZOGSfFYEHHex0Uom"
+    }
+}

@@ -2,7 +2,7 @@ from binance import Client
 from binance.spot import Spot
 import json
 
-PATH_KEYS = "/home/esteban/python-workspace/trading/binance_bot/secret.json"
+PATH_KEYS = "/home/esteban/python-workspace/trading/binance_bot/environment.json"
 
 def get_api_keys() -> str:
     f = open(PATH_KEYS)
